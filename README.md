@@ -1,7 +1,8 @@
-# vue-atom-ui [![NPM Version][npm-image]][npm-url] [![NPM Downloads][downloads-image]][downloads-url] ![npm bundle size (minified + gzip)][size-image]
+# vue-atom-ui [![NPM Version][npm-image]][npm-url] [![NPM Downloads][downloads-image]][downloads-url] [![npm bundle size (minified + gzip)][size-image]][size-url]
 :whale:    更快更简单
 
 [size-image]: https://img.shields.io/bundlephobia/minzip/vue-atom-ui.svg
+[size-url]: https://bundlephobia.com/result?p=vue-atom-ui
 [npm-image]: https://img.shields.io/npm/v/vue-atom-ui.svg
 [npm-url]: https://npmjs.org/package/vue-atom-ui
 
