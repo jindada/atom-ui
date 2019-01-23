@@ -16,7 +16,7 @@ export default {
 
     data() {
         return {
-            value1: 0,
+            value1: 10,
             value2: 6,
             value3: 10
         };
