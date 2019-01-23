@@ -1,6 +1,6 @@
-<template>
-    <div :class="{'atom-progress-line--smooth': hasBorderRadius}" class="atom-progress-line">
-        <div :class="{smooth: hasBorderRadius}" class="atom-progress-line__body" :style="{width: value + '%', transition: 'width ' + this.speed + 'ms'}"></div>
+<template functional>
+    <div :class="{'atom-progress-line--rounded': props.hasBorderRadius}" class="atom-progress-line">
+        <div :class="{rounded: props.hasBorderRadius}" class="atom-progress-line__body" :style="{width: props.value + '%', transition: 'width ' + props.speed + 'ms'}"></div>
     </div>
 </template>
 <script>

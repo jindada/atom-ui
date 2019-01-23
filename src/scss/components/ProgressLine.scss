@@ -4,7 +4,7 @@ $height: 0.1rem;
     height: $height;
     position: relative;
     overflow: hidden;
-    &--smooth {
+    &--rounded {
         border-radius: $height;
     }
     &__body {
