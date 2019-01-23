@@ -1,22 +1,29 @@
 <template>
     <div class="atom-range">
-        <span @click="slideToMin" class="min">{{min}}</span>
-        <span class="content" @click="slideTo">
-            <div ref="runway" class="runway"></div>
-            <div :style="{width: touch.translateXNew + 'px'}" :class="['progress', 2 > touch.status && 'transition']">
-            </div>
-            <div ref="handle" :style="{transform: `translate3d(${touch.translateXNew}px, 0, 0)`}" :class="['handle', 2 > touch.status && 'transition']" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
-                <a v-show="0 < touch.status">{{value}}</a>
-            </div>
-        </span>
-        <span @click="slideToMax" class="max">{{max}}</span>
+        <div class="atom-range__body">
+            <input hidden :value="value" :name="name">
+            <!-- 进度条 -->
+            <a-progress-line ref="progress" :value="progress"/>
+            <!-- 抓手 -->
+            <span ref="handler" :style="{left: `${progress}%`}" class="atom-range__handler">
+                <slot></slot>
+            </span>
+        </div>
     </div>
 </template>
 <script>
+import AnyTouch from "any-touch";
+import AProgressLine from "../../packages/Progress/Line";
 export default {
-    name: 'AtomRange',
+    name: "AtomRange",
+
+    components: { AProgressLine },
 
     props: {
+        name: {
+            type: String
+        },
+
         min: {
             type: Number,
             default: 0
@@ -27,6 +34,11 @@ export default {
             default: 100
         },
 
+        step: {
+            type: Number,
+            default: 1
+        },
+
         value: {
             type: [Number, String],
             required: true
@@ -35,115 +47,37 @@ export default {
 
     data() {
         return {
-            maxDistance: 0, // 滑道可用宽度
-            touch: {
-                status: 0,
-                translateXOld: 0,
-                translateXNew: 0,
-                start: 0,
-                current: 0,
-                distance: 0
-            }
+            // 滚动条长度
+            progressBarWidth: 0
         };
     },
 
-    mounted() {
-        // 滑道宽度 - 把手宽度
-        this.maxDistance = this.$refs.runway.offsetWidth - this.$refs.handle.offsetWidth;
-        // 默认值
-        this.touch.translateXNew = (this.value - this.min) / (this.max - this.min) * this.maxDistance;
-        this.touch.translateXOld = this.touch.translateXNew;
-    },
-
-    methods: {
-        /**
-         * 滑动到最小值
-         */
-        slideToMin() {
-            this.touch.status = 1;
-            this.touch.translateXNew = 0;
-            this.touch.translateXOld = this.touch.translateXNew;
-        },
-        /**
-         * 滑动到最大值
-         */
-        slideToMax() {
-            this.touch.status = 1;
-            this.touch.translateXNew = this.maxDistance;
-            this.touch.translateXOld = this.touch.translateXNew;
-        },
-        /**
-         * 活动到鼠标位置
-         * @param  {Object} e
-         */
-        slideTo(e) {
-            this.touch.status = 0;
-            var translateXNew = e.offsetX;
-            if (this.maxDistance <= translateXNew) {
-                translateXNew = this.maxDistance;
-            }
-
-            if (e.target != this.$refs.handle) {
-                this.touch.translateXNew = translateXNew;
-                this.touch.translateXOld = this.touch.translateXNew;
-            }
-        },
-        /**
-         * 点击handle
-         */
-        touchstart(e) {
-            this.touch.status = 1;
-            this.touch.start = e.touches[0].clientX;
-        },
-        /**
-         * 拖动
-         */
-        touchmove(e) {
-            this.touch.status = 2;
-            this.touch.current = e.touches[0].clientX;
-            this.touch.distance = this.touch.current - this.touch.start;
-
-            // ** 判断放在最外层有不同的动画效果 **
-            // 判断边界
-            var translateXNew = this.touch.translateXOld + this.touch.distance;
-            if (0 > translateXNew) {
-                // 左侧边界判断
-                this.touch.translateXNew = 0;
-            } else if (this.maxDistance < translateXNew) {
-                // 右侧边界判断
-                this.touch.translateXNew = this.maxDistance;
-            } else {
-                this.touch.translateXNew = translateXNew;
-            }
-            e.preventDefault();
-            e.stopPropagation();
-        },
-        /**
-         * 松手
-         */
-        touchend(e) {
-            this.touch.status = 0;
-
-            if (0 > this.touch.translateXNew) {
-                this.touch.translateXNew = 0;
-            }
-            // 记住滑动位置
-            this.touch.translateXOld = this.touch.translateXNew;
+    computed: {
+        progress() {
+            const start = this.value-this.min;
+            const length = this.max - this.min;
+            const progress =  Math.round(start / length * 100);
+            return Math.max(Math.min(100, progress), 0);
         }
     },
 
-    watch: {
-        ['touch.translateXNew']() {
-            // 同步value
-            var value = this.min + (this.max - this.min) * (this.touch.translateXNew / this.maxDistance);
-            this.$emit('input', Math.round(value));
-        },
+    mounted() {
+        const at = new AnyTouch(this.$refs.handler);
+        this.progressBarWidth = this.$el.offsetWidth;
+        at.on('panstart', ev => {
+            this.moveHandler(ev.deltaX);
+        });
 
-        value(value) {
-            if (0 == this.touch.status) {
-                this.touch.translateXNew = (value - this.min) / (this.max - this.min) * this.maxDistance;
-                this.touch.translateXOld = this.touch.translateXNew;
-            }
+        at.on('panmove', ev => {
+            this.moveHandler(ev.deltaX);
+        });
+    },
+
+    methods: {
+        moveHandler(deltaX) {
+            let value = (this.value + (deltaX / this.progressBarWidth) * (this.max - this.min));
+            value = Math.max(Math.min(this.max, value), this.min);
+            this.$emit('input', value);
         }
     }
 };

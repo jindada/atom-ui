@@ -1,59 +1,32 @@
-$rangeHeight: 0.5rem;
+$rangeHeight: 30px;
+
 .atom-range {
-    position: relative;
-    display: flex;
-    /*控制*/
-    .min {
-        padding: 0 $gutter;
-        font-size: $big;
-        line-height: $rangeHeight;
-    }
-    .content {
-        flex: 1;
+    padding:0 $rangeHeight/2;
+    
+    &__body{
         position: relative;
+        display: flex;
+        height:$rangeHeight;
+        width: 100%;
+        align-items: center;
+    }
+
+
+    &__handler {
+        position: absolute;
+        display: block;
+        z-index: 2;
+        cursor: move;
         height: $rangeHeight;
-        box-sizing: border-box;
-        .runway {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            background: $light;
-            height: 2px;
-            width: 100%;
-        }
-        .progress {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            background: $base;
-            height: 2px;
-            width: 0;
-        }
-        .handle {
-            position: absolute;
-            z-index: 2;
-            top: 0;
-            left: 0;
-            cursor: move;
-            display: block;
-            height: $rangeHeight;
-            line-height: $rangeHeight;
-            width: $rangeHeight;
-            text-align: center;
-            
-            border-radius: 100%;
-            background: $base;
-            box-shadow: $shadowDown, $shadowUp;
-            >a{color: $sub;}
-        }
-    }
-    .max {
-        padding: 0 $gutter;
-        font-size: $big;
         line-height: $rangeHeight;
+        width: $rangeHeight;
+        text-align: center;
+        border-radius: 100%;
+        background: rgba($primary,1);
+        color: $white;
+        transform: translateX(-50%);
     }
+
     .transition {
         transition: all $duration;
     }

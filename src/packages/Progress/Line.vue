@@ -1,9 +1,13 @@
-<template functional>
-    <div :class="{'atom-progress-line--rounded': props.hasBorderRadius}" class="atom-progress-line">
-        <div :class="{rounded: props.hasBorderRadius}" class="atom-progress-line__body" :style="{width: props.value + '%', transition: 'width ' + props.speed + 'ms'}"></div>
+<template>
+    <div :class="{'atom-progress-line--rounded': hasBorderRadius}" class="atom-progress-line">
+        <div :class="{rounded: hasBorderRadius}" class="atom-progress-line__body" :style="{width: value + '%', transition: 'width ' + speed + 'ms'}"></div>
     </div>
 </template>
 <script>
+/**
+ * 发现functional组件的没法在父组件中通过$refs访问, 
+ * 所以暂时不用
+ */
 export default {
     name: 'AtomProgressLine',
 
@@ -14,7 +18,7 @@ export default {
 
         speed: {
             type: [Number, String],
-            default: 300
+            default: 0
         },
 
         hasBorderRadius: {

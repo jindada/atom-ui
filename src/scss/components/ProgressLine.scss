@@ -1,15 +1,16 @@
-$height: 0.1rem;
+$progressLineHeight: 3px;
 .atom-progress-line {
-    background: $lightest;
-    height: $height;
     position: relative;
+    background: $lightest;
+    height: $progressLineHeight;
+    width: 100%;
     overflow: hidden;
     &--rounded {
-        border-radius: $height;
+        border-radius: $progressLineHeight;
     }
     &__body {
         width: 0;
-        height: $height;
-        background: $base;
+        height: $progressLineHeight;
+        background: $primary;
     }
 }
