@@ -6,7 +6,6 @@ $arrowBorderSize: 1px;
     display: inline-block;
     border: 1px solid $lightest;
     border-radius: $borderRadius;
-    background: $white;
 
     &[x-placement^='top'] {
         box-shadow: $shadowDown;

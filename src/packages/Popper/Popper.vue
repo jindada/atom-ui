@@ -97,6 +97,12 @@ export default {
     },
 
     methods: {
+        forceUpdate(){
+            if(undefined !== this.popper) {
+                this.popper.scheduleUpdate();
+            }
+        },
+
         isTargetInContainer(e) {
             // 当前目标元素不在组件内部 && 当popper移动到body外的时候, 目标不在reference/popper中
             return (
