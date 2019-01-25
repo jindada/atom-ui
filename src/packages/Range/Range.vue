@@ -39,11 +39,11 @@
     </div>
 </template>
 <script>
-import AnyTouch from "any-touch";
-import AProgressLine from "../../packages/Progress/Line";
-import APopper from "../../packages/Popper";
+import AnyTouch from 'any-touch';
+import AProgressLine from '../../packages/Progress/Line';
+import APopper from '../../packages/Popper';
 export default {
-    name: "AtomRange",
+    name: 'AtomRange',
 
     components: { AProgressLine, APopper },
 
@@ -106,20 +106,16 @@ export default {
             if (!this.isPanMove) this.currentValue = value;
         },
 
-        currentValue(value) {
+        currentValue(value, oldValue) {
             let _value = value;
             if (this.max < value) {
                 _value = this.max;
             } else if (this.min > value) {
                 _value = this.min;
             }
-            _value = Math.round(_value);
             // step的整数倍
-            if (0 === (_value - this.min) % this.step) {
-                this.$emit("change", _value);
-                this.$emit("input", _value);
-            }
-            // this.$emit('input', _value);
+            // if (0 === (_value - this.min) % this.step) {
+            this.$emit('input', Math.floor(_value));
         }
     },
 
@@ -133,19 +129,20 @@ export default {
         // 进度条宽度
         this.progressBarWidth = this.$refs.progress.$el.offsetWidth;
 
-        at.on("panstart", ev => {
+        at.on('panstart', (ev) => {
             this.moveHandler(ev.deltaX);
         });
 
-        at.on("panmove", ev => {
+        at.on('panmove', (ev) => {
             this.moveHandler(ev.deltaX);
         });
 
-        at.on("panend", ev => {
+        at.on('panend', (ev) => {
             this.resetBoundary();
+            this.$emit('change', this.value);
         });
 
-        this.$on("hook:beforeDestroy", () => {
+        this.$on('hook:beforeDestroy', () => {
             at.destroy();
         });
     },
@@ -155,9 +152,9 @@ export default {
          * 移动把手
          */
         moveHandler(deltaX) {
-            this.isShowPopper = true;
             this.$nextTick(() => {
                 if (this.$slots.default) {
+                    this.isShowPopper = true;
                     // 刷新popper的位置
                     this.$refs.popper.forceUpdate();
                 }

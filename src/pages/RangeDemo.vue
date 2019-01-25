@@ -15,10 +15,10 @@
         <a-range v-model="value2" :has-dots="true" :min="10" :max="20"/>
 
         <!-- step -->
-        <h4 class="fill gutter-top">最大值8, 最小值0, 每一步2, 当前:
+        <h4 class="fill gutter-top">最大值4, 最小值0, 每一步1, 当前:
             <span class="text-primary">{{value3}}</span>
         </h4>
-        <a-range v-model="value3" :has-dots="true" :min="0" :max="6" :step="2"/>
+        <a-range v-model="value3" :has-dots="true" :min="0" :max="4" :step="1"/>
 
         <!-- 自定义把手 -->
         <h4 class="fill gutter-top">自定义把手样式, 当前:
