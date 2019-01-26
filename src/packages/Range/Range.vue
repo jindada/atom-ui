@@ -5,13 +5,16 @@
             <a-progress-line ref="progress" :value="progress"/>
 
             <!-- 刻度 -->
-            <i
-                v-if="hasDots"
+            <template v-if="hasDots">
+                <i
                 v-for="n in dotsLength"
+                :key="n"
                 :style="{left: `${(n-1)*100/(dotsLength-1)}%`}"
                 :class="{'atom-range__icon-dot--unreached':currentValue-min<(n-1)*step}"
                 class="atom-range__icon-dot"
             />
+            </template>
+            
 
             <!-- 抓手 -->
             <span
