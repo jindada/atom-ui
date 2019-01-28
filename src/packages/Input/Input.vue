@@ -19,6 +19,8 @@
             :aria-disabled="$attrs.disabled"
             :aria-placeholder="$attrs.placeholder" 
             v-model="text"
+            @compositionstart="compositionstart"
+            @compositionend="compositionend"
             @focus="focus" 
             @blur="blur" 
             @keyup="keyup" 
@@ -127,10 +129,19 @@ export default {
             errorMessage: '',
             rulesGroupByEvent: {},
             isShowLoading: false,
+            // 是否正处于输入法的创作模式
+            isComposing: false
         };
     },
 
     methods: {
+        compositionstart(e){
+            this.isComposing = true;
+        },
+
+        compositionend(){
+            this.isComposing = false;
+        },
         /**
          * 过滤指定字符
          * @argument {String} 输入
@@ -298,6 +309,7 @@ export default {
         },
 
         keyup(e) {
+            if(this.isComposing) return;
             // 过滤
             // let value = this.filterInput(this.text);
             let value = this.filterInput(e.target.value);

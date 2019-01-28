@@ -1,9 +1,10 @@
 <template>
     <main>
+        <h4>{{text1}}</h4>
         <a-cell>
             <template slot="prepend">学 校 *</template>
-            <input 
-                
+            <a-input 
+                maxlength="3"
                 class="padding-left" 
                 ref="inputSchool" 
                 required 
@@ -12,8 +13,6 @@
                 v-model="text1"/>
                 <a-icon  class="gutter-left-sm" slot="append" @click="$alert('我在append插槽中')" name="star-o" size="16" />
         </a-cell>
-
-        <a-button >确定</a-button>
 
         <a-cell >
             <template slot="prepend">姓名 *</template>
