@@ -1,64 +1,58 @@
 <template>
-    <div 
-        :error="hasError" 
-        :loading="isShowLoading" 
-        class="atom-input"
-        :empty="isEmpty"
-        >
+  <div :error="hasError" :loading="isShowLoading" class="atom-input" :empty="isEmpty">
+    <!-- 前置 -->
+    <slot name="prepend"></slot>
 
-        <!-- 前置 -->
-        <slot name="prepend"></slot>
+    <!-- 默认插槽 -->
+    <slot></slot>
 
-        <!-- 默认插槽 -->
-        <slot></slot>
+    <!-- input -->
+    <input
+      ref="input"
+      v-bind="$attrs"
+      :aria-disabled="$attrs.disabled"
+      :aria-placeholder="$attrs.placeholder"
+      v-model="text"
+      @compositionstart="compositionstart"
+      @compositionend="compositionend"
+      @focus="focus"
+      @blur="blur"
+      @keyup="keyup"
+      @keydown="keydown"
+      @change="change"
+      class="atom-input__input"
+    >
 
-        <!-- input -->
-        <input 
-            ref="input" 
-            v-bind="$attrs" 
-            :aria-disabled="$attrs.disabled"
-            :aria-placeholder="$attrs.placeholder" 
-            v-model="text"
-            @compositionstart="compositionstart"
-            @compositionend="compositionend"
-            @focus="focus" 
-            @blur="blur" 
-            @keyup="keyup" 
-            @keydown="keydown"
-            @change="change"
-            class="atom-input__input">
-        
-        <!-- 后置 -->
+    <!-- 后置 -->
+    <!-- 关闭按钮 -->
+    <transition name="fadeLeft">
+      <a-icon
+        v-if="clearable"
+        name="close"
+        size="14"
+        v-show="isShowClearBtn"
+        @click="clear"
+        class="atom-input__btn-empty"
+      />
+    </transition>
 
-        <!-- 关闭按钮 -->
-        <transition name="fadeLeft">
-            <a-icon 
-                v-if="clearable" 
-                name="close" 
-                size="14" 
-                v-show="isShowClearBtn"
-                @click="clear" 
-                class="atom-input__btn-empty"/>
-        </transition>
+    <template v-if="hasFeedback">
+      <!-- 加载图标 -->
+      <i class="atom-input__loading"/>
 
-        <template v-if="hasFeedback">
-            <!-- 加载图标 -->
-            <i class="atom-input__loading"/>
+      <!-- 错误图标和文字 -->
+      <span class="atom-input__error">
+        <a-icon name="warning" size="14"/>
+        <span class="error-message">
+          {{errorMessage}}
+          <i class="triangle triangle-danger"></i>
+        </span>
+      </span>
+    </template>
 
-            <!-- 错误图标和文字 -->
-            <span class="atom-input__error">
-                <a-icon name="warning" size="14"/>
-                <span  class="error-message">
-                    {{errorMessage}}
-                    <i class="triangle triangle-danger"></i>
-                </span>
-            </span>
-        </template>
-
-
-        <!-- 后置 -->
-        <slot name="append"></slot>
-    </div>
+    <!-- 后置 -->
+    <slot name="append"></slot>
+  </div>
 </template>
 <script>
 // 1. 不要派发input事件, 因为keyup中已经手动触发了input
@@ -75,38 +69,38 @@ export default {
         // focus时候是否选中所有文字
         isSelectAll: {
             type: Boolean,
-            default: false,
+            default: false
         },
         clearable: {
             type: Boolean,
-            default: true,
+            default: true
         },
 
         value: {
-            required: true,
+            required: true
         },
 
         // bankCode | letter | phone | number
         type: {
-            type: String,
+            type: String
         },
 
         // 验证失败, 是否有图标和对话框
         hasFeedback: {
             type: Boolean,
-            default: true,
+            default: true
         },
 
         // 验证规则
         rules: {
             type: Array,
-            default: () => [],
+            default: () => []
         },
 
         // 对输入过滤
         filter: {
-            type: RegExp,
-        },
+            type: RegExp
+        }
     },
 
     computed: {
@@ -118,7 +112,7 @@ export default {
             // 表情字符算一个字符
             const regexAstralSymbols = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
             return this.value.replace(regexAstralSymbols, '_').length;
-        },
+        }
     },
 
     data() {
@@ -135,13 +129,13 @@ export default {
     },
 
     methods: {
-        compositionstart(e){
+        compositionstart(e) {
             this.isComposing = true;
         },
 
-        compositionend(){
+        compositionend(e) {
             this.isComposing = false;
-            this.keyup();
+            this.keyup(e);
         },
         /**
          * 过滤指定字符
@@ -149,7 +143,9 @@ export default {
          * @returns {String} 过滤后字符串
          */
         filterInput(string) {
-            return undefined !== this.filter ? string.replace(this.filter, '') : string;
+            return undefined !== this.filter
+                ? string.replace(this.filter, '')
+                : string;
         },
 
         /**
@@ -310,7 +306,7 @@ export default {
         },
 
         keyup(e) {
-            if(this.isComposing) return;
+            if (this.isComposing) return;
             // 过滤
             // let value = this.filterInput(this.text);
             let value = this.filterInput(e.target.value);
@@ -325,7 +321,10 @@ export default {
                 if (valueLen > 3 && valueLen < 8) {
                     value = `${value.substr(0, 3)} ${value.substr(3)}`;
                 } else if (valueLen >= 8) {
-                    value = `${value.substr(0, 3)} ${value.substr(3, 4)} ${value.substr(7)}`;
+                    value = `${value.substr(0, 3)} ${value.substr(
+                        3,
+                        4
+                    )} ${value.substr(7)}`;
                 }
             } else if ('number' == this.type) {
                 value = value.replace(/\D/g, '');
@@ -352,7 +351,7 @@ export default {
             this.$emit('input', '');
             this.$emit('clear');
             this.$refs.input.focus();
-        },
+        }
     },
 
     watch: {
@@ -364,7 +363,7 @@ export default {
             } else {
                 this.isShowClearBtn = true;
             }
-        },
+        }
     },
 
     created() {
@@ -374,7 +373,7 @@ export default {
     },
 
     mounted() {
-        this.rules.forEach(rule => {
+        this.rules.forEach((rule) => {
             // 默认blur触发验证
             const eventName = rule.trigger || 'blur';
             if (undefined === this.rulesGroupByEvent[eventName]) {
@@ -382,6 +381,6 @@ export default {
             }
             this.rulesGroupByEvent[eventName].push(rule);
         });
-    },
+    }
 };
 </script>
