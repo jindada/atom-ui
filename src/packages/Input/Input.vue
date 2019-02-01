@@ -141,6 +141,7 @@ export default {
 
         compositionend(){
             this.isComposing = false;
+            this.keyup();
         },
         /**
          * 过滤指定字符

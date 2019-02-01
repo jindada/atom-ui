@@ -1,6 +1,6 @@
 <template>
     <main>
-        <h4>{{text1}}</h4>
+        <!-- <h4>{{text1}}</h4> -->
         <a-cell>
             <template slot="prepend">学 校 *</template>
             <a-input 
