@@ -7,9 +7,12 @@ $biggest: 22px;
 $large: 28px;
 $font_sizes: (
     small: $small,
+    sm: $small,
     normal: $normal,
+    md: $normal,
     big: $big,
     bigger: $bigger,
     biggest: $biggest,
-    large: $large
+    large: $large,
+    lg: $large,
 );

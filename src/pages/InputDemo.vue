@@ -4,7 +4,6 @@
         <a-cell>
             <template slot="prepend">学 校 *</template>
             <a-input 
-                maxlength="5"
                 class="padding-left" 
                 ref="inputSchool" 
                 required 

@@ -1,0 +1,58 @@
+.atom-fieldset {
+    position: relative;
+    @extend .fill-sm;
+    >label{
+        position: absolute;
+        @extend .text-darker;
+
+        // @extend .text-info;
+        // @extend .font-big;
+
+    }
+    &__body {
+        display: flex;
+        align-items: center;
+
+        >.body__loading{
+            width:16px;
+            height: 16px;
+        }
+
+        >.body__icon{
+            @extend .text-white;
+            width:14px;
+            height:14px;
+            line-height:14px;
+            text-align: center;
+            border-radius: 100%;
+            // >svg{vertical-align: middle !important;}
+            &-tick{
+                @extend .bg-success;
+            }
+            &-close{
+                @extend .bg-danger;
+            }
+            &-warning{
+                @extend .bg-warning;
+            }
+            &-loading{
+                @extend .text-dark;
+
+            }
+        }
+    }
+
+    &__message{
+        min-height: 16px;
+        color:$dark;
+        &--success{
+            @extend .text-success;
+        }
+        &--error{
+            @extend .text-danger;
+        }
+        &--warning{
+            @extend .text-warning;
+        }
+    }
+}

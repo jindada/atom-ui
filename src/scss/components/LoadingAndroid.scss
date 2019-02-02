@@ -7,6 +7,7 @@
         // animation: color 6s ease-in-out infinite, dash 1.5s ease-in-out infinite;
         animation: dash 1.5s ease-in-out infinite;
         stroke-linecap: round;
+        color: currentColor;
     }
     @keyframes dash {
         0% {

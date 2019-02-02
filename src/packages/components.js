@@ -50,6 +50,7 @@ import ATextarea from './Textarea';
 import AVirtualScroller from './VirtualScroller';
 import AIcon from './Icon';
 import {ASwipeOut, ASwipeOutButton} from './SwipeOut';
+import AFieldset from './Fieldset';
 
 export {
     AAffix,
@@ -93,5 +94,5 @@ export {
     AVirtualScroller,
     AIcon,
     ASwipeOut,
-    ASwipeOutButton,ALoading
+    ASwipeOutButton,ALoading,AFieldset
 }

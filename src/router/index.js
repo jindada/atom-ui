@@ -9,6 +9,7 @@ import Index from '@/pages/Index';
 import SwitchDemo from '@/pages/SwitchDemo';
 
 // 表单元素
+import FieldsetDemo from '@/pages/FieldsetDemo';
 import InputDemo from '@/pages/InputDemo';
 import TextFieldDemo from '@/pages/TextFieldDemo';
 import CollapseDemo from '@/pages/CollapseDemo';
@@ -25,7 +26,7 @@ import ActionSheetDemo from '@/pages/ActionSheetDemo';
 
 // 对话框
 const AlertDemo = () => ({
-    component: import ('@/pages/AlertDemo')
+    component: import('@/pages/AlertDemo')
 });
 
 import ConfirmDemo from '@/pages/ConfirmDemo';
@@ -77,7 +78,7 @@ import $pickerDemo from '@/pages/$pickerDemo';
 
 // 组合
 const PopupPickerDemo = () => ({
-    component: import ('@/pages/PopupPickerDemo')
+    component: import('@/pages/PopupPickerDemo')
 });
 
 export default new Router({
@@ -306,7 +307,10 @@ export default new Router({
             name: 'ActionSheet',
             path: '/ActionSheet',
             component: ActionSheetDemo
+        }, {
+            name: 'Fieldset',
+            path: '/Fieldset',
+            component: FieldsetDemo
         },
-        
     ]
 });
