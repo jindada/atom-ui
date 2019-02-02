@@ -104,6 +104,7 @@ $height: 20px;
     }
     @keyframes showTip {
         from {
+            opacity: 0;
             transform: translateY(-5%);
         }
         50% {

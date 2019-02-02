@@ -1,58 +1,59 @@
 <template>
-  <div :error="hasError" :loading="isShowLoading" class="atom-input" :empty="isEmpty">
-    <!-- 前置 -->
-    <slot name="prepend"></slot>
+    <div :error="hasError" :loading="isShowLoading" class="atom-input" :empty="isEmpty">
+        <!-- 前置 -->
+        <slot name="prepend"></slot>
 
-    <!-- 默认插槽 -->
-    <slot></slot>
+        <!-- 默认插槽 -->
+        <slot></slot>
 
-    <!-- input -->
-    <input
-      ref="input"
-      v-bind="$attrs"
-      :aria-disabled="$attrs.disabled"
-      :aria-placeholder="$attrs.placeholder"
-      v-model="text"
-      @compositionstart="compositionstart"
-      @compositionend="compositionend"
-      @focus="focus"
-      @blur="blur"
-      @keyup="keyup"
-      @keydown="keydown"
-      @change="change"
-      class="atom-input__input"
-    >
+        <!-- input -->
+        <input
+            ref="input"
+            v-bind="$attrs"
+            :aria-disabled="$attrs.disabled"
+            :aria-placeholder="$attrs.placeholder"
+            :value="value"
+            @compositionstart="compositionstartHandler"
+            @compositionend="compositionendHandler"
+            @input="inputHandler"
+            @focus="focusHandler"
+            @blur="blurHandler"
+            @keyup="keyupHandler"
+            @keydown="keydownHandler"
+            @change="changeHandler"
+            class="atom-input__input"
+        >
 
-    <!-- 后置 -->
-    <!-- 关闭按钮 -->
-    <transition name="fadeLeft">
-      <a-icon
-        v-if="clearable"
-        name="close"
-        size="14"
-        v-show="isShowClearBtn"
-        @click="clear"
-        class="atom-input__btn-empty"
-      />
-    </transition>
+        <!-- 后置 -->
+        <!-- 关闭按钮 -->
+        <transition name="fadeLeft">
+            <a-icon
+                v-if="clearable"
+                name="close"
+                size="14"
+                v-show="isShowClearBtn"
+                @click="clear"
+                class="atom-input__btn-empty"
+            />
+        </transition>
 
-    <template v-if="hasFeedback">
-      <!-- 加载图标 -->
-      <i class="atom-input__loading"/>
+        <template v-if="hasFeedback">
+            <!-- 加载图标 -->
+            <i class="atom-input__loading"/>
 
-      <!-- 错误图标和文字 -->
-      <span class="atom-input__error">
-        <a-icon name="warning" size="14"/>
-        <span class="error-message">
-          {{errorMessage}}
-          <i class="triangle triangle-danger"></i>
-        </span>
-      </span>
-    </template>
+            <!-- 错误图标和文字 -->
+            <span class="atom-input__error">
+                <a-icon name="warning" size="14"/>
+                <span class="error-message">
+                    {{errorMessage}}
+                    <i class="triangle triangle-danger"></i>
+                </span>
+            </span>
+        </template>
 
-    <!-- 后置 -->
-    <slot name="append"></slot>
-  </div>
+        <!-- 后置 -->
+        <slot name="append"></slot>
+    </div>
 </template>
 <script>
 // 1. 不要派发input事件, 因为keyup中已经手动触发了input
@@ -67,10 +68,11 @@ export default {
 
     props: {
         // focus时候是否选中所有文字
-        isSelectAll: {
+        isSelectAllOnFoucs: {
             type: Boolean,
             default: false
         },
+
         clearable: {
             type: Boolean,
             default: true
@@ -105,7 +107,10 @@ export default {
 
     computed: {
         isEmpty() {
-            return undefined !== this.text && 0 === this.text.length;
+            return (
+                undefined !== this.value &&
+                0 === this.value.replace(/\s*/g, '').length
+            );
         },
 
         length() {
@@ -117,7 +122,6 @@ export default {
 
     data() {
         return {
-            text: '',
             isShowClearBtn: false,
             hasError: false,
             errorMessage: '',
@@ -129,13 +133,49 @@ export default {
     },
 
     methods: {
-        compositionstart(e) {
+        inputHandler(e) {
+            if (this.isComposing) return;
+            // 过滤
+            let value = this.filterInput(e.target.value);
+            // if ('bankCode' == this.type) {
+            //     value = value.replace(/\D/g, '').replace(/(....)(?=.)/g, '$1 ');
+            // } else if ('letter' == this.type) {
+            //     value = value.replace(/\d/g, '');
+            // } else if ('phone' == this.type) {
+            //     value = value.replace(/\D/g, '').substring(0, 11);
+            //     const valueLen = value.length;
+            //     if (valueLen > 3 && valueLen < 8) {
+            //         value = `${value.substr(0, 3)} ${value.substr(3)}`;
+            //     } else if (valueLen >= 8) {
+            //         value = `${value.substr(0, 3)} ${value.substr(
+            //             3,
+            //             4
+            //         )} ${value.substr(7)}`;
+            //     }
+            // } else if ('number' == this.type) {
+            //     value = value.replace(/\D/g, '');
+            // }
+            this.$emit('input', value);
+            // 强制刷新组件, 当过滤后的值和前值一样的时候不会触发
+            // this.$forceUpdate();
+        },
+
+        /**
+         * 输入法开始提示备选
+         * @param {Event} 事件数据
+         */
+        compositionstartHandler(e) {
             this.isComposing = true;
         },
 
-        compositionend(e) {
+        /**
+         * 选择输入法备选词后
+         * @param {Event} 事件数据
+         */
+        compositionendHandler(e) {
             this.isComposing = false;
-            this.keyup(e);
+            // 同步值
+            this.inputHandler(e);
         },
         /**
          * 过滤指定字符
@@ -156,27 +196,27 @@ export default {
                 // 是否通过验证
                 if (rule.required) {
                     // 必填
-                    if ('' !== this.text) {
+                    if ('' !== this.value) {
                         resolve(true);
                     } else {
                         reject(rule.message);
                     }
                 } else if (undefined !== rule.test) {
                     // 正则验证
-                    if (rule.test.test(this.text)) {
+                    if (rule.test.test(this.value)) {
                         resolve(true);
                     } else {
                         reject(rule.message);
                     }
                 } else if (undefined !== rule.minLength) {
-                    if (rule.minLength <= this.text.length) {
+                    if (rule.minLength <= this.value.length) {
                         resolve(true);
                     } else {
                         reject(rule.message);
                     }
                 } else if (undefined !== rule.maxLength) {
                     // maxlength
-                    if (rule.maxLength >= this.text.length) {
+                    if (rule.maxLength >= this.value.length) {
                         resolve(true);
                     } else {
                         reject(rule.message);
@@ -283,64 +323,37 @@ export default {
             this.$emit('success');
         },
 
-        focus(e) {
+        focusHandler(e) {
             this.isFocused = true;
             // 默认不选中文字
-            if (this.isSelectAll) {
+            if (this.isSelectAllOnFoucs) {
                 e.target.select();
             }
-            if ('' !== this.text) {
+            if ('' !== this.value) {
                 this.isShowClearBtn = true;
             }
             this.$emit('focus', e);
         },
 
-        blur(e) {
+        blurHandler(e) {
             this.validateInEvent('blur');
             this.isShowClearBtn = false;
             this.$emit('blur', e);
         },
 
-        change(e) {
+        changeHandler(e) {
             this.$emit('change', e);
         },
 
-        keyup(e) {
-            if (this.isComposing) return;
-            // 过滤
-            // let value = this.filterInput(this.text);
-            let value = this.filterInput(e.target.value);
-
-            if ('bankCode' == this.type) {
-                value = value.replace(/\D/g, '').replace(/(....)(?=.)/g, '$1 ');
-            } else if ('letter' == this.type) {
-                value = value.replace(/\d/g, '');
-            } else if ('phone' == this.type) {
-                value = value.replace(/\D/g, '').substring(0, 11);
-                const valueLen = value.length;
-                if (valueLen > 3 && valueLen < 8) {
-                    value = `${value.substr(0, 3)} ${value.substr(3)}`;
-                } else if (valueLen >= 8) {
-                    value = `${value.substr(0, 3)} ${value.substr(
-                        3,
-                        4
-                    )} ${value.substr(7)}`;
-                }
-            } else if ('number' == this.type) {
-                value = value.replace(/\D/g, '');
-            }
-            this.text = value;
-            this.$emit('keyup', e);
-            this.$emit('input', value);
-            // 强制刷新组件, 当过滤后的值和前值一样的时候不会触发
-            this.$forceUpdate();
+        keyupHandler(e) {
             this.validateInEvent('keyup');
+            this.$emit('keyup', e);
         },
 
         /**
          * 每次输入清空错误提示
          */
-        keydown(e) {
+        keydownHandler(e) {
             this.$emit('keydown');
         },
 
@@ -357,7 +370,7 @@ export default {
     watch: {
         value(value) {
             // 同步外部值
-            this.text = value;
+            // this.value = value;
             if ('' == value) {
                 this.isShowClearBtn = false;
             } else {
@@ -368,7 +381,6 @@ export default {
 
     created() {
         // 同步默认值
-        this.text = this.value;
         this.$emit('input', this.filterInput(this.value));
     },
 

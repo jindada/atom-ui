@@ -1,10 +1,10 @@
 <template>
     <main>
-        <!-- <h4>{{text1}}</h4> -->
+        <h4>{{text1}}</h4>
         <a-cell>
             <template slot="prepend">学 校 *</template>
             <a-input 
-                maxlength="3"
+                maxlength="5"
                 class="padding-left" 
                 ref="inputSchool" 
                 required 
